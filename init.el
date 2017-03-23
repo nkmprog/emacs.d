@@ -11,6 +11,10 @@
 
 (package-initialize)
 
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
 (setq
  backup-by-copying t                             ; don't clobber symlinks
  backup-directory-alist '(("." . "~/.saves"))    ; don't litter my fs tree
@@ -24,9 +28,6 @@
 (column-number-mode t)
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
-
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
 
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
