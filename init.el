@@ -11,10 +11,6 @@
 
 (package-initialize)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
 (setq
  backup-by-copying t                             ; don't clobber symlinks
  backup-directory-alist '(("." . "~/.saves"))    ; don't litter my fs tree
@@ -29,6 +25,9 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
 
@@ -41,13 +40,22 @@
                                  (setq indent-tabs-mode nil)
                                  (add-to-list 'ac-modes 'erlang-mode))))
 
-(use-package elixir-mode
+(use-package projectile
   :ensure t)
+
+(use-package elixir-mode
+  :ensure t
+  :config
+  (add-hook 'elixir-format-hook (lambda ()
+                                 (if (projectile-project-p)
+                                      (setq elixir-format-arguments
+                                            (list "--dot-formatter"
+                                                  (concat (locate-dominating-file buffer-file-name ".formatter.exs") ".formatter.exs")))
+                                   (setq elixir-format-arguments nil))))
+  (add-hook 'elixir-mode-hook
+           '(lambda () (add-hook 'before-save-hook 'elixir-format nil t))))
 
 (use-package alchemist
-  :ensure t)
-
-(use-package smartparens
   :ensure t)
 
 (use-package zenburn-theme
@@ -97,12 +105,22 @@
   (add-hook 'erlang-mode-hook 'flycheck-mode)
   (add-hook 'elixir-mode-hook 'flycheck-mode))
 
+(use-package drag-stuff
+  :ensure t
+  :config
+  (drag-stuff-define-keys))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(git-gutter:added-sign "++")
+ '(git-gutter:deleted-sign "--")
+ '(git-gutter:modified-sign "  ")
+ '(package-selected-packages
+   (quote
+    (projectile zenburn-theme use-package solarized-theme smartparens scheme-here racket-mode markdown-preview-mode magit ledger-mode git-gutter flycheck erlang drag-stuff diminish atom-one-dark-theme alchemist))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
