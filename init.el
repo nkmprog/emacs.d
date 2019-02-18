@@ -26,6 +26,7 @@
 (setq-default tab-width 4)
 
 (unless (package-installed-p 'use-package)
+  (package-refresh-contents)
   (package-install 'use-package))
 
 (when (fboundp 'tool-bar-mode)
